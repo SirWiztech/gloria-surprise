@@ -36,7 +36,7 @@ return [
 
     'admin' => [
         // bcrypt hash of "WiztechForever2026"
-        'password_hash' => getenv('ADMIN_PASSWORD_HASH') ?: '$2y$12$/R6gCg/GH4hKOgFMM6b8Je9zH5QM99wMUSyxvC060BBfK.TuSeRu6',
+        'password_hash' => getenv('ADMIN_PASSWORD_HASH') ?: 'WiztechForever2026',
     ],
 
     // Where the "she answered!" notification is sent. Leave empty to disable.

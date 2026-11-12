@@ -191,6 +191,41 @@ function db(): PDO
     return $pdo;
 }
 
+// ── Database connection check ────────────────────────────────────────────────
+
+if (PHP_SAPI !== 'cli') {
+    try {
+        db();
+    } catch (Throwable $e) {
+        error_log('[for-gloria] database connection failed: ' . $e->getMessage());
+
+        http_response_code(503);
+        header('Content-Type: text/html; charset=utf-8');
+        header('Cache-Control: no-store, max-age=0');
+        header('Retry-After: 60');
+
+        $detail = $debug
+            ? '<pre style="white-space: pre-wrap; background: #fef2f2; border: 1px solid #fecaca; padding: 1rem; border-radius: 0.5rem; overflow: auto;">'
+                . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+                . '</pre>'
+            : '<p style="color: #6b7280;">Set <code>APP_DEBUG=true</code> in <code>.env</code> to show the exact error.</p>';
+
+        echo '<!DOCTYPE html>'
+            . '<html lang="en"><head><meta charset="utf-8">'
+            . '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            . '<title>Database connection failed</title></head>'
+            . '<body style="font-family: system-ui, sans-serif; max-width: 720px; margin: 4rem auto; padding: 0 1.5rem; color: #1f2937; line-height: 1.6;">'
+            . '<h1 style="color: #b91c1c;">Database connection failed</h1>'
+            . '<p>The site cannot load because it could not connect to the database.</p>'
+            . '<p>Check <code>DB_HOST</code>, <code>DB_PORT</code>, <code>DB_NAME</code>, '
+            . '<code>DB_USERNAME</code> and <code>DB_PASSWORD</code> in <code>.env</code> '
+            . 'or the server environment, then reload this page.</p>'
+            . $detail
+            . '</body></html>';
+        exit;
+    }
+}
+
 // ── CSRF ─────────────────────────────────────────────────────────────────────
 
 function csrf_token(): string
