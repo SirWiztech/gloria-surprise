@@ -1,0 +1,35 @@
+# ── For Gloria — Apache configuration ──────────────────────────────────────
+
+Options -Indexes
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+# Keep configuration and setup files out of the browser.
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(config\.php|bootstrap\.php|database\.sql|README\.md|\.env)$">
+        Require all denied
+    </FilesMatch>
+
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+# Older Apache fallback.
+<IfModule !mod_authz_core.c>
+    <FilesMatch "^(config\.php|bootstrap\.php|database\.sql|README\.md|\.env)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# Assets are versioned from PHP, so they are safe to cache for a long time.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType audio/mpeg "access plus 1 month"
+    ExpiresByType audio/wav "access plus 1 month"
+</IfModule>

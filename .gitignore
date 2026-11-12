@@ -1,0 +1,10 @@
+# Local secrets and settings
+.env
+
+# Local test artifacts
+.tmp/
+*.log
+
+# OS noise
+.DS_Store
+Thumbs.db
