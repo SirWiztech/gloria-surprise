@@ -8,7 +8,7 @@ declare(strict_types=1);
  * the recipient can resume from the last completed step.
  */
 
-require dirname(__DIR__) . '/bootstrap.php';
+require dirname(__DIR__, 2) . '/bootstrap.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
     header('Allow: GET');

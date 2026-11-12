@@ -15,19 +15,22 @@ Built with PHP 8 (PDO), MySQL, vanilla JavaScript and CSS. No frameworks.
 
 | Path | What it does |
 | --- | --- |
-| `index.php` | The whole experience: welcome, six steps, YES/NO, celebration |
-| `assets/css/style.css` | Red-and-white glassmorphism design, mobile first |
-| `assets/js/app.js` | View transitions, validation, autosave-per-step, confetti, hearts, music |
-| `assets/img/chiamaka.jpg` | **Placeholder** — replace with her photo |
-| `assets/audio/music.wav` | Original soft ambient loop used by the music button |
-| `admin.php` | Private dashboard: every response, detail view, CSV export |
+| `public/index.php` | The whole experience: welcome, six steps, YES/NO, celebration |
+| `public/assets/css/style.css` | Red-and-white glassmorphism design, mobile first |
+| `public/assets/js/app.js` | View transitions, validation, autosave-per-step, confetti, hearts, music |
+| `public/assets/img/chiamaka.jpg` | **Placeholder** — replace with her photo |
+| `public/assets/audio/music.wav` | Original soft ambient loop used by the music button |
+| `public/admin.php` | Private dashboard: every response, detail view, CSV export |
 | `config.php` | Database, admin hash, notification email |
 | `.env` | Local settings loaded automatically; never commit this file |
 | `bootstrap.php` | Shared session, security headers, PDO and helpers |
 | `database.sql` | The `responses` table |
-| `api/save.php` | CSRF-protected JSON endpoint that saves one step at a time |
-| `api/state.php` | Returns saved progress so she can resume |
+| `public/api/save.php` | CSRF-protected JSON endpoint that saves one step at a time |
+| `public/api/state.php` | Returns saved progress so she can resume |
 | `tools/hash-password.php` | Generates a new admin password hash |
+
+Only the `public/` folder is web-accessible. Configuration, secrets, SQL and
+tooling live outside it.
 
 ---
 
@@ -105,7 +108,7 @@ shows a warning while the default password is still in use.
 
 ### 5. Add her photo
 
-Replace **`assets/img/chiamaka.jpg`** with Gloria's photo, keeping the same
+Replace **`public/assets/img/chiamaka.jpg`** with Gloria's photo, keeping the same
 filename. A portrait crop around **800 × 1000 px** works best — the frame is
 arched and crops to the centre. The current file is a clearly marked
 placeholder.
@@ -114,18 +117,19 @@ placeholder.
 
 The music button on the YES screen is off by default and never autoplays.
 The folder already contains an original 48-second ambient loop
-(`assets/audio/music.wav`).
+(`public/assets/audio/music.wav`).
 
-To use your own song, replace **`assets/audio/music.wav`** with another WAV, or
-point the `<source>` tag in `index.php` at an MP3 you add. If the file cannot
+To use your own song, replace **`public/assets/audio/music.wav`** with another WAV, or
+point the `<source>` tag in `public/index.php` at an MP3 you add. If the file cannot
 be played, the button hides itself instead of showing a broken control.
 
 ### 7. Run it
 
-Point your web server's document root at this folder. For a quick local test:
+Point your web server's document root at the **`public/`** folder. For a quick
+local test:
 
 ```bash
-php -S localhost:8000
+php -S localhost:8000 -t public
 ```
 
 Then open <http://localhost:8000>. The dashboard is at
@@ -133,6 +137,29 @@ Then open <http://localhost:8000>. The dashboard is at
 
 > The PHP development server is for local testing only. Use Apache/Nginx with
 > HTTPS for the real thing.
+
+If you use Laravel Herd, open the site settings and set the document root to
+`public/` for this project.
+
+### 8. Deploy to Wasmer Edge
+
+Wasmer detects `public/index.php` as the entry point, so no extra config is
+needed. Push to the branch connected to your Wasmer app, or run this from the
+project root if you deploy with the CLI:
+
+```bash
+wasmer deploy
+```
+
+Set the database and other secrets as Wasmer environment variables (or keep
+`.env` on the server). After deploying, verify the assets:
+
+```bash
+curl -I https://gloria-surprise.wasmer.app/assets/css/style.css
+```
+
+The public URL maps `public/` to the site root, so files are served from
+`/assets/...`, `/api/...` and `/admin.php`.
 
 ---
 
@@ -192,19 +219,12 @@ hash.
 
 - No analytics, no tracking scripts, and no third-party requests except Google
   Fonts. The `canvas-confetti` library is bundled locally.
-- `config.php`, `bootstrap.php`, `database.sql`, `README.md` and `.env` are
-  blocked by `.htaccess` on Apache. **On Nginx, add equivalent denies** — for
-  example:
-
-  ```nginx
-  location ~ ^/(config\.php|bootstrap\.php|database\.sql|README\.md|\.env)$ {
-      deny all;
-  }
-  location ^~ /tools/ {
-      deny all;
-  }
-  ```
-
+- `config.php`, `bootstrap.php`, `database.sql`, `README.md`, `.env` and
+  `tools/` live outside the `public/` document root, so the web server never
+  serves them. `config.php` and `bootstrap.php` also return `404` if requested
+  directly.
+- Do not put `.htaccess` inside `public/` on Wasmer: PHPix parses Apache
+  directives and the deny rules break static files.
 - Session cookies are `HttpOnly`, `SameSite=Lax`, and `Secure` when served over
   HTTPS.
 - Responses are stored in MySQL and can be exported or read only from the

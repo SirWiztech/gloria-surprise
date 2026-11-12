@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/bootstrap.php';
+require dirname(__DIR__) . '/bootstrap.php';
 
 $adminCssVersion = @filemtime(__DIR__ . '/assets/css/admin.css') ?: time();
 

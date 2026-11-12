@@ -1,0 +1,8 @@
+.git
+.gitignore
+.tmp
+*.log
+.htaccess
+.htaccess.apache
+tools/.htaccess
+tools/.htaccess.apache

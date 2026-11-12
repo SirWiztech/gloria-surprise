@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/bootstrap.php';
+require dirname(__DIR__) . '/bootstrap.php';
 
 $csrf = csrf_token();
 $cssVersion = @filemtime(__DIR__ . '/assets/css/style.css') ?: time();

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Gloria can safely close the page and pick up exactly where she left off.
  */
 
-require dirname(__DIR__) . '/bootstrap.php';
+require dirname(__DIR__, 2) . '/bootstrap.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     header('Allow: POST');

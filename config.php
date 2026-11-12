@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+if (isset($_SERVER['SCRIPT_FILENAME']) && realpath((string) $_SERVER['SCRIPT_FILENAME']) === realpath(__FILE__)) {
+    http_response_code(404);
+    exit;
+}
+
 /**
  * ─────────────────────────────────────────────────────────────────────────────
  *  FOR GLORIA — application configuration

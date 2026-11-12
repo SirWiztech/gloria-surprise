@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+if (isset($_SERVER['SCRIPT_FILENAME']) && realpath((string) $_SERVER['SCRIPT_FILENAME']) === realpath(__FILE__)) {
+    http_response_code(404);
+    exit;
+}
+
 /**
  * Shared bootstrap: configuration, hardened session, security headers,
  * database connection and small helpers used across the app.
