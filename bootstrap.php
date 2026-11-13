@@ -14,6 +14,31 @@ if (isset($_SERVER['SCRIPT_FILENAME']) && realpath((string) $_SERVER['SCRIPT_FIL
 
 define('APP_ROOT', __DIR__);
 
+function env_has(string $key): bool
+{
+    return getenv($key) !== false
+        || array_key_exists($key, $_ENV)
+        || array_key_exists($key, $_SERVER);
+}
+
+function env_value(string $key, string $default = ''): string
+{
+    $value = getenv($key);
+    if ($value !== false && $value !== '') {
+        return (string) $value;
+    }
+
+    if (array_key_exists($key, $_ENV) && $_ENV[$key] !== '') {
+        return (string) $_ENV[$key];
+    }
+
+    if (array_key_exists($key, $_SERVER) && $_SERVER[$key] !== '') {
+        return (string) $_SERVER[$key];
+    }
+
+    return $default;
+}
+
 /**
  * Load KEY=VALUE pairs from .env when present. Real environment variables
  * always take precedence over the file. Supports comments, an optional
@@ -50,7 +75,7 @@ function load_env_file(string $path): void
         $key = trim(substr($line, 0, $separator));
         $value = trim(substr($line, $separator + 1));
 
-        if (!preg_match('/^[A-Z_][A-Z0-9_]*$/', $key) || getenv($key) !== false) {
+        if (!preg_match('/^[A-Z_][A-Z0-9_]*$/', $key) || env_has($key)) {
             continue;
         }
 
@@ -66,6 +91,7 @@ function load_env_file(string $path): void
 
         putenv($key . '=' . $value);
         $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
     }
 }
 
