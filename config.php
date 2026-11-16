@@ -12,18 +12,13 @@ if (isset($_SERVER['SCRIPT_FILENAME']) && realpath((string) $_SERVER['SCRIPT_FIL
  *  FOR GLORIA — application configuration
  * ─────────────────────────────────────────────────────────────────────────────
  *
- *  Fill in your database details below, change the admin password hash, and
- *  add the email address that should be notified when Gloria finishes.
+ *  Fill in your database details below and add the email address that should
+ *  be notified when Gloria finishes.
  *
  *  Every value can also come from the .env file (read automatically) or a real
  *  environment variable exposed through getenv(), $_ENV or $_SERVER, which is
- *  handy on hosts that set env vars.
- *
- *  Generate a new admin password hash with:
- *      php tools/hash-password.php "your new password"
- *
- *  The default password below is:  WiztechForever2026
- *  Change it before putting this online.
+ *  handy on hosts that set env vars. The admin password is the exception: it
+ *  is hardcoded here and never read from the environment.
  */
 
 return [
@@ -36,8 +31,8 @@ return [
     ],
 
     'admin' => [
-        // bcrypt hash of "WiztechForever2026"
-        'password_hash' => env_value('ADMIN_PASSWORD_HASH', '$2y$12$/R6gCg/GH4hKOgFMM6b8Je9zH5QM99wMUSyxvC060BBfK.TuSeRu6'),
+        // Hardcoded admin password. Do not move this to .env or the environment.
+        'password' => 'WiztechForever2026',
     ],
 
     // Where the "she answered!" notification is sent. Leave empty to disable.

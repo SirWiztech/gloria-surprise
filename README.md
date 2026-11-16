@@ -21,13 +21,12 @@ Built with PHP 8 (PDO), MySQL, vanilla JavaScript and CSS. No frameworks.
 | `public/assets/img/chiamaka.jpg` | **Placeholder** — replace with her photo |
 | `public/assets/audio/music.wav` | Original soft ambient loop used by the music button |
 | `public/admin.php` | Private dashboard: every response, detail view, CSV export |
-| `config.php` | Database, admin hash, notification email |
+| `config.php` | Database, hardcoded admin password, notification email |
 | `.env` | Local settings loaded automatically; never commit this file |
 | `bootstrap.php` | Shared session, security headers, PDO and helpers |
 | `database.sql` | The `responses` table |
 | `public/api/save.php` | CSRF-protected JSON endpoint that saves one step at a time |
 | `public/api/state.php` | Returns saved progress so she can resume |
-| `tools/hash-password.php` | Generates a new admin password hash |
 
 Only the `public/` folder is web-accessible. Configuration, secrets, SQL and
 tooling live outside it.
@@ -73,7 +72,6 @@ DB_NAME=gloria_proposal
 DB_USERNAME=your_db_user
 DB_PASSWORD=your_db_password
 
-ADMIN_PASSWORD_HASH='...'
 NOTIFY_EMAIL=you@example.com
 
 APP_TIMEZONE=Africa/Lagos
@@ -88,23 +86,18 @@ or leave email off and use the dashboard. You can also edit the defaults in
 deploying from git, create `.env` on the server — it is intentionally ignored
 and never committed.
 
-### 4. Change the admin password
+### 4. Set the admin password
 
-The dashboard ships with a default password:
+The admin password is hardcoded in `config.php` and is not read from `.env` or
+any environment variable:
 
-```
-WiztechForever2026
-```
-
-Change it before uploading anything. Generate a hash:
-
-```bash
-php tools/hash-password.php "a new private password"
+```php
+'admin' => [
+    'password' => 'WiztechForever2026',
+],
 ```
 
-Paste the output into `admin.password_hash` in `config.php`, or as
-`ADMIN_PASSWORD_HASH` in `.env`. The dashboard
-shows a warning while the default password is still in use.
+Edit that line if you ever want to change it.
 
 ### 5. Add her photo
 
@@ -196,8 +189,8 @@ Open `/admin.php` and enter the admin password.
 - One-click CSV export
 - Login throttling after repeated wrong passwords
 
-The default password warning disappears automatically once you set your own
-hash.
+The dashboard password is hardcoded in `config.php`, so no environment variable
+is needed for it.
 
 ---
 

@@ -208,7 +208,7 @@ $jsVersion = @filemtime(__DIR__ . '/assets/js/app.js') ?: time();
                         <p class="celebration-message">
                             Gloria, you just made someone's whole world brighter. Congratulations on one of the best
                             decisions of your life. Wiztech promises to love you, respect you, and keep choosing you
-                            every day. 🎊
+                            every day. 🎊 Prepare for your first date on January, Wiztech loves you 💗...
                         </p>
 
                         <button class="music-toggle" id="music-toggle" type="button" aria-pressed="false">

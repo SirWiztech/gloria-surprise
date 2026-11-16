@@ -11,10 +11,6 @@ header('X-Robots-Tag: noindex, nofollow');
 
 $isAuthed = !empty($_SESSION['admin_authed']);
 $errors = [];
-$usingDefaultPassword = password_verify(
-    'WiztechForever2026',
-    (string) config_value('admin.password_hash', '')
-);
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $action = is_string($_POST['action'] ?? null) ? $_POST['action'] : '';
@@ -30,9 +26,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         if ($fails >= 5 && (time() - $lastFail) < 300) {
             $errors[] = 'Too many attempts. Please wait a few minutes and try again.';
         } else {
-            $hash = (string) config_value('admin.password_hash', '');
+            $adminPassword = (string) config_value('admin.password', '');
 
-            if ($hash !== '' && is_string($password) && password_verify($password, $hash)) {
+            if ($adminPassword !== '' && is_string($password) && hash_equals($adminPassword, $password)) {
                 session_regenerate_id(true);
                 $_SESSION['admin_authed'] = true;
                 unset($_SESSION['admin_fails'], $_SESSION['admin_last_fail'], $_SESSION['csrf_token']);
@@ -347,13 +343,6 @@ function detail_answer(mixed $value): string
 
         <?php if ($loadError !== ''): ?>
             <p class="alert" role="alert"><?= e($loadError) ?></p>
-        <?php endif; ?>
-
-        <?php if ($usingDefaultPassword): ?>
-            <p class="notice" role="status">
-                <strong>Heads up:</strong> you are still using the default admin password. Change
-                <code>admin.password_hash</code> in <code>config.php</code> before sharing this site.
-            </p>
         <?php endif; ?>
 
         <?php if ($deleteTarget !== null): ?>
